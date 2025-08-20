@@ -1,0 +1,28 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: cqrs
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate.format_sql: true
+      hibernate.jdbc.time_zone: UTC
+    generate-ddl: true
+
+# Database
+app:
+  datasource:
+    write:
+      url: jdbc:postgresql://localhost:5433/write_db
+      username: writer
+      password: writer_pass
+    read:
+      url: jdbc:postgresql://localhost:5434/read_db
+      username: reader
+      password: reader_pass
+
+

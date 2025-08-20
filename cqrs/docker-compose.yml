@@ -1,0 +1,20 @@
+services:
+  pg-write:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: writer
+      POSTGRES_PASSWORD: writer_pass
+      POSTGRES_DB: write_db
+    ports: ["5433:5432"]
+    volumes: [pgw:/var/lib/postgresql/data]
+  pg-read:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: reader
+      POSTGRES_PASSWORD: reader_pass
+      POSTGRES_DB: read_db
+    ports: ["5434:5432"]
+    volumes: [pgr:/var/lib/postgresql/data]
+volumes:
+  pgw: {}
+  pgr: {}
