@@ -1,4 +1,4 @@
-# CQRS Demo with Spring Boot + PostgreSQL
+# CQRS [in-app projector] Demo with Spring Boot + PostgreSQL
 
 A sample CQRS (Command Query Responsibility Segregation) implementation using Spring Boot 3, Java 21, and two PostgreSQL databases (one for writes, one for reads).
 
