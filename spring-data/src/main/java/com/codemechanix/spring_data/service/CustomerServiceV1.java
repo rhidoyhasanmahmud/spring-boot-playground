@@ -4,13 +4,12 @@ import com.codemechanix.spring_data.model.Customer;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-
 import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-public interface CustomerService {
+public interface CustomerServiceV1 {
     Customer create(Customer req);
     Customer patch(Customer req);
 

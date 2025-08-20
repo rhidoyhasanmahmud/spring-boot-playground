@@ -16,7 +16,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class CustomerServiceImpl implements CustomerService {
+public class CustomerServiceV1Impl implements CustomerServiceV1 {
 
     private final CustomerRepository repo;
 
