@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.codemechanix</groupId>
-	<artifactId>cqrs</artifactId>
+	<artifactId>cqrs-in-app-projector</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>cqrs</name>
 	<description>A demo CQRS Project</description>
