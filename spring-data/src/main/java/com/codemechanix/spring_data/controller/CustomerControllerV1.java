@@ -1,7 +1,7 @@
 package com.codemechanix.spring_data.controller;
 
 import com.codemechanix.spring_data.model.Customer;
-import com.codemechanix.spring_data.service.CustomerService;
+import com.codemechanix.spring_data.service.CustomerServiceV1;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,14 +13,17 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 
 import java.io.OutputStream;
 import java.time.Instant;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/customers")
+@RequestMapping("/api/v1/customers")
 @RequiredArgsConstructor
-public class CustomerController {
+public class CustomerControllerV1 {
 
-    private final CustomerService service;
+    private final CustomerServiceV1 service;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

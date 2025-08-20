@@ -1,16 +1,23 @@
 package com.codemechanix.spring_data.dto;
 
-import java.time.Instant;
-import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-public record CustomerResponse(
-        Long id,
-        UUID publicId,
-        String firstName,
-        String lastName,
-        String email,
-        String phone,
-        String address,
-        Instant createdAt,
-        Instant updatedAt
-) {}
+import java.time.LocalDateTime;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class CustomerResponse {
+    private Long id;
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String phone;
+    private String address;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+}
