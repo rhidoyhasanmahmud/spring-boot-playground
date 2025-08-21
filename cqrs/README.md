@@ -148,7 +148,7 @@ While CQRS and Event Sourcing can be used together, they are not mutually exclus
 
 ### CQRS pattern
 
-![cqrs/image](cqrs.png)
+![images/cqrs.png](images/cqrs.png)
 
 The diagram shows the following process:
 
@@ -169,7 +169,7 @@ You can implement the CQRS pattern by using various combinations of databases, i
 
 In the following illustration, a NoSQL data store, such as DynamoDB, is used to optimize the write throughput and provide flexible query capabilities. This achieves high write scalability on workloads that have well-defined access patterns when you add data. A relational database, such as Amazon Aurora, provides complex query functionality. A DynamoDB stream sends data to a Lambda function that updates the Aurora table.
 
-![img_1.png](img_1.png)
+![img_1.png](images/enabling-diagram3.png)
 
 **Implementing the CQRS pattern with DynamoDB and Aurora provides these key benefits:**
 
