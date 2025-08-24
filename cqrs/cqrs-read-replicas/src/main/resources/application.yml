@@ -1,22 +1,24 @@
 spring:
   datasource:
     write:
-      jdbc-url: jdbc:postgresql://primary-db:5432/app_db
-      username: app
-      password: app_pass
+      url: jdbc:postgresql://localhost:5432/postgres   # <-- was jdbc-url
+      username: user
+      password: password
       driver-class-name: org.postgresql.Driver
       hikari:
         maximum-pool-size: 10
         minimum-idle: 5
         idle-timeout: 300000
+        read-only: false
     read:
-      jdbc-url: jdbc:postgresql://replica-db:5432/app_db
-      username: app
-      password: app_pass
+      url: jdbc:postgresql://localhost:5433/postgres    # <-- was jdbc-url
+      username: user
+      password: password
       driver-class-name: org.postgresql.Driver
       hikari:
         maximum-pool-size: 10
         minimum-idle: 5
         idle-timeout: 300000
+        read-only: true
   jpa:
     show-sql: true

@@ -1,44 +1,50 @@
 package com.codemechanix.cqrs.config;
 
-import jakarta.persistence.EntityManagerFactory;
+import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.*;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.*;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
-import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
 import java.util.Map;
+import java.util.Objects;
 
 @Configuration
 @EnableJpaRepositories(
         basePackages = "com.codemechanix.cqrs.query.repo",
-        entityManagerFactoryRef = "readEntityManagerFactoryBean",
-        transactionManagerRef = "readTxManager"
+        entityManagerFactoryRef = "readEmf",
+        transactionManagerRef   = "readTx"
 )
 public class ReadDbConfig {
 
-    @Bean(name = "readEntityManagerFactoryBean")
-    public LocalContainerEntityManagerFactoryBean readEntityManagerFactoryBean(
-            @Qualifier("readDataSource") DataSource ds) {
-        LocalContainerEntityManagerFactoryBean emfb = new LocalContainerEntityManagerFactoryBean();
-        emfb.setDataSource(ds);
-        emfb.setPackagesToScan("com.codemechanix.cqrs.query.model");
-        emfb.setPersistenceUnitName("read");
-        emfb.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-        emfb.setJpaPropertyMap(Map.of(
-                "hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect",
-                "hibernate.hbm2ddl.auto", "update"
-        ));
-        return emfb;
+    @Bean
+    @ConfigurationProperties("spring.datasource.read")
+    public DataSourceProperties readDsProps() { return new DataSourceProperties(); }
+
+    @Bean(name = "readDataSource")
+    @ConfigurationProperties("spring.datasource.read.hikari")
+    public DataSource readDataSource() {
+        return readDsProps().initializeDataSourceBuilder()
+                .type(HikariDataSource.class).build();
     }
 
-    @Bean(name = "readTxManager")
-    public PlatformTransactionManager readTxManager(
-            @Qualifier("readEntityManagerFactoryBean") EntityManagerFactory emf) {
-        return new JpaTransactionManager(emf);
+    @Bean(name = "readEmf")
+    public LocalContainerEntityManagerFactoryBean readEmf() {
+        var em = new LocalContainerEntityManagerFactoryBean();
+        em.setDataSource(readDataSource());
+        em.setPackagesToScan("com.codemechanix.cqrs.query.model");
+        em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+        em.setJpaPropertyMap(Map.of("hibernate.hbm2ddl.auto", "none"));
+        return em;
+    }
+
+    @Bean(name = "readTx")
+    public JpaTransactionManager readTx(
+            @Qualifier("readEmf") LocalContainerEntityManagerFactoryBean emf) {
+        return new JpaTransactionManager(Objects.requireNonNull(emf.getObject()));
     }
 }

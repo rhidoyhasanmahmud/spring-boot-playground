@@ -1,44 +1,53 @@
 package com.codemechanix.cqrs.config;
 
-import jakarta.persistence.EntityManagerFactory;
+import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.*;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.*;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
-import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
 import java.util.Map;
+import java.util.Objects;
 
 @Configuration
 @EnableJpaRepositories(
         basePackages = "com.codemechanix.cqrs.command.repo",
-        entityManagerFactoryRef = "writeEntityManagerFactoryBean",
-        transactionManagerRef = "writeTxManager"
+        entityManagerFactoryRef = "writeEmf",
+        transactionManagerRef   = "writeTx"
 )
 public class WriteDbConfig {
 
-    @Bean(name = "writeEntityManagerFactoryBean")
-    public LocalContainerEntityManagerFactoryBean writeEntityManagerFactoryBean(
-            @Qualifier("writeDataSource") DataSource ds) {
-        LocalContainerEntityManagerFactoryBean emfb = new LocalContainerEntityManagerFactoryBean();
-        emfb.setDataSource(ds);
-        emfb.setPackagesToScan("com.codemechanix.cqrs.command.model");
-        emfb.setPersistenceUnitName("write");
-        emfb.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-        emfb.setJpaPropertyMap(Map.of(
-                "hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect",
-                "hibernate.hbm2ddl.auto", "update"
-        ));
-        return emfb;
+    @Bean
+    @ConfigurationProperties("spring.datasource.write")
+    public DataSourceProperties writeDsProps() { return new DataSourceProperties(); }
+
+    @Bean(name = "writeDataSource")
+    @Primary
+    @ConfigurationProperties("spring.datasource.write.hikari")
+    public DataSource writeDataSource() {
+        return writeDsProps().initializeDataSourceBuilder()
+                .type(HikariDataSource.class).build();
     }
 
-    @Bean(name = "writeTxManager")
-    public PlatformTransactionManager writeTxManager(
-            @Qualifier("writeEntityManagerFactoryBean") EntityManagerFactory emf) {
-        return new JpaTransactionManager(emf);
+    @Bean(name = "writeEmf")
+    @Primary
+    public LocalContainerEntityManagerFactoryBean writeEmf() {
+        var em = new LocalContainerEntityManagerFactoryBean();
+        em.setDataSource(writeDataSource());
+        em.setPackagesToScan("com.codemechanix.cqrs.command.model");
+        em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+        em.setJpaPropertyMap(Map.of("hibernate.hbm2ddl.auto", "none"));
+        return em;
+    }
+
+    @Bean(name = "writeTx")
+    @Primary
+    public JpaTransactionManager writeTx(
+            @Qualifier("writeEmf") LocalContainerEntityManagerFactoryBean emf) {
+        return new JpaTransactionManager(Objects.requireNonNull(emf.getObject()));
     }
 }
